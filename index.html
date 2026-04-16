@@ -6,12 +6,14 @@
   <title>رحلة القضية أمام إدارة قضايا الدولة السورية</title>
   <meta name="description" content="شرح منظم لمسار القضية التي تكون جهة عامة طرفاً فيها أمام إدارة قضايا الدولة السورية، من نشوء النزاع حتى الحكم والتنفيذ.">
   <meta name="theme-color" content="#16324F">
+  <meta name="color-scheme" content="light">
   <link rel="canonical" href="https://lawsuits-journey.github.io/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
+      color-scheme: light;
       --navy: #16324f;
       --navy-2: #21486d;
       --slate: #66788a;
@@ -30,11 +32,17 @@
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      color-scheme: light;
+      background-color: #f6f8fb;
+      -webkit-text-size-adjust: 100%;
+    }
     body {
       margin: 0;
       font-family: "IBM Plex Sans Arabic", Tahoma, Arial, sans-serif;
       color: var(--ink);
+      background-color: var(--bg);
       background: linear-gradient(180deg, #fbfcfe 0%, var(--bg) 100%);
       line-height: 1.95;
       text-rendering: optimizeLegibility;
@@ -185,6 +193,7 @@
     .station-item {
       overflow: clip;
       transition: border-color 160ms ease, box-shadow 160ms ease;
+      scroll-margin-top: 88px;
     }
 
     .station-item[open] {
@@ -397,6 +406,64 @@
       flex-wrap: wrap;
       font-size: 0.95rem;
       color: var(--muted);
+    }
+
+    .footer-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .footer-signoff {
+      font-size: 0.92rem;
+      color: var(--slate);
+      font-weight: 600;
+    }
+
+    .footer-link {
+      white-space: nowrap;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root { color-scheme: light; }
+      html, body {
+        background-color: #f6f8fb !important;
+        color: var(--ink) !important;
+      }
+      body {
+        background-image: linear-gradient(180deg, #fbfcfe 0%, var(--bg) 100%) !important;
+      }
+      .site-bar,
+      .hero,
+      .station-item,
+      .notes,
+      .sources,
+      .footer-card,
+      .meta-card,
+      .source {
+        background-color: #ffffff !important;
+        color: inherit !important;
+      }
+      .site-bar-title,
+      .hero h1,
+      .section-head h2,
+      .station-title,
+      .meta-title,
+      .source h3 {
+        color: var(--navy) !important;
+      }
+      .hero p,
+      .station-teaser,
+      .meta-value,
+      .station-body p,
+      .notes li,
+      .source-meta dd,
+      .section-head p,
+      .footer-card,
+      .footer-signoff {
+        color: var(--muted) !important;
+      }
+      a { color: var(--navy) !important; }
     }
 
     .sr-only {
@@ -810,8 +877,11 @@
 
       <footer class="footer">
         <div class="footer-card">
-          <div>إدارة قضايا الدولة السورية</div>
-          <a href="#top">العودة إلى أعلى الصفحة</a>
+          <div class="footer-copy">
+            <div>إدارة قضايا الدولة </div>
+            <div class="footer-signoff">محامي الدولة: يوسف علي /فرع حمص</div>
+          </div>
+          <a class="footer-link" href="#top">العودة إلى أعلى الصفحة</a>
         </div>
       </footer>
     </div>
@@ -820,12 +890,26 @@
   <script>
     (function () {
       const stations = Array.from(document.querySelectorAll('.station-item'));
+      const siteBar = document.querySelector('.site-bar');
+
+      const scrollToStationStart = (item, behavior) => {
+        const headerHeight = siteBar ? siteBar.getBoundingClientRect().height : 0;
+        const offset = 14;
+        const top = item.getBoundingClientRect().top + window.pageYOffset - headerHeight - offset;
+        window.scrollTo({ top: Math.max(top, 0), behavior });
+      };
+
       stations.forEach((item) => {
         item.addEventListener('toggle', () => {
           if (!item.open) return;
+
           stations.forEach((other) => {
             if (other !== item) other.removeAttribute('open');
           });
+
+          window.setTimeout(() => {
+            scrollToStationStart(item, 'smooth');
+          }, 48);
         });
       });
 
@@ -834,6 +918,9 @@
         const target = document.querySelector(location.hash);
         if (target && target.classList.contains('station-item')) {
           target.open = true;
+          window.setTimeout(() => {
+            scrollToStationStart(target, 'auto');
+          }, 48);
         }
       };
 
